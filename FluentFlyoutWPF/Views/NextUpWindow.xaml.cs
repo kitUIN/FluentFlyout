@@ -1,11 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using FluentFlyout.Classes.Settings;
-using FluentFlyoutWPF.Classes;
+using FluentFlyout.Classes;
 using MicaWPF.Controls;
 
-namespace FluentFlyoutWPF.Windows;
+namespace FluentFlyout.Windows;
 
 /// <summary>
 /// Interaction logic for NextUpWindow.xaml

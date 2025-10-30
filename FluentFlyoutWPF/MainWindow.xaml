@@ -1,4 +1,4 @@
-﻿<controls:MicaWindow x:Class="FluentFlyoutWPF.MainWindow"
+﻿<controls:MicaWindow x:Class="FluentFlyout.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -117,12 +117,14 @@
                             </controls:Button>
                             <controls:Button
                         Height="32" Width="32" Name="ControlPlayPause"
-                        Margin="0,0,8,0" Click="PlayPause_Click" Focusable="False"
+                        Margin="0,0,8,0"  Click="PlayPause_Click" Focusable="False"
                         Style="{StaticResource MicaWPF.Styles.AccentedButton}" VerticalAlignment="Center">
                                 <ui:SymbolIcon Name="SymbolPlayPause" Symbol="Pause16" Filled="True"/>
                             </controls:Button>
                             <controls:Button
-                        Height="28" Width="28" Name="ControlForward"
+                        Height="{StaticResource MediaFlyoutButtonSmallHeight}" 
+                        Width="{StaticResource MediaFlyoutButtonSmallWidth}" 
+                        Name="ControlForward"
                         Margin="0,0,8,0" Click="Forward_Click" Focusable="False"
                         Style="{StaticResource MicaWPF.Styles.TransparentButton}" VerticalAlignment="Center">
                                 <ui:SymbolIcon Name="SymbolForward" Symbol="Next20" Filled="True"/>

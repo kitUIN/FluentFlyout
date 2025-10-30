@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Media.Imaging;
-using FluentFlyout.Classes.Settings;
 using MicaWPF.Core.Enums;
 using MicaWPF.Core.Helpers;
 using MicaWPF.Core.Services;

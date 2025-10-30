@@ -1,11 +1,4 @@
-﻿using FluentFlyout.Classes;
-using FluentFlyout.Classes.Settings;
-using FluentFlyoutWPF.Classes;
-using FluentFlyoutWPF.Windows;
-using MicaWPF.Controls;
-using MicaWPF.Core.Extensions;
-using Microsoft.Win32;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -16,10 +9,15 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using Windows.Media.Control;
 using Windows.Storage.Streams;
+using FluentFlyout.Classes;
+using FluentFlyout.Windows;
+using MicaWPF.Controls;
+using MicaWPF.Core.Extensions;
+using Microsoft.Win32;
 using static WindowsMediaController.MediaManager;
 
 
-namespace FluentFlyoutWPF;
+namespace FluentFlyout;
 
 public partial class MainWindow : MicaWindow
 {
@@ -124,7 +122,7 @@ public partial class MainWindow : MicaWindow
 
     private void openSettings(object? sender, EventArgs e)
     {
-        SettingsWindow.ShowInstance();
+        FluentFlyout.Views.SettingsWindow.ShowInstance();
     }
 
     public int getDuration() // get the duration of the animation based on the speed setting

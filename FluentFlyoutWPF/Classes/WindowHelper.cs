@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Interop;
 
-namespace FluentFlyoutWPF.Classes;
+namespace FluentFlyout.Classes;
 
 class WindowHelper
 {

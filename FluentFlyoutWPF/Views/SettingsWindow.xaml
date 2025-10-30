@@ -1,4 +1,4 @@
-﻿<controls:MicaWindow x:Class="FluentFlyoutWPF.SettingsWindow"
+﻿<controls:MicaWindow x:Class="FluentFlyout.Views.SettingsWindow"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -11,8 +11,8 @@
       Title="Settings" Icon="/Resources/FluentFlyout2.ico"
       TextOptions.TextRenderingMode="ClearType" TextOptions.TextFormattingMode="Ideal"
       Closing="SettingsWindow_Closing"
-      xmlns:settings="clr-namespace:FluentFlyout.Classes.Settings"
-      d:DataContext="{d:DesignInstance settings:UserSettings}">
+      xmlns:viewModels="clr-namespace:FluentFlyout.ViewModels"
+      d:DataContext="{d:DesignInstance viewModels:UserSettings}">
     <Grid>
         <ui:PassiveScrollViewer HorizontalScrollBarVisibility="Auto">
             <StackPanel>

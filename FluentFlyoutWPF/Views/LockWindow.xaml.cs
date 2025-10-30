@@ -1,11 +1,9 @@
-﻿using MicaWPF.Controls;
+﻿using System.Windows;
+using FluentFlyout.Classes;
+using MicaWPF.Controls;
 using MicaWPF.Core.Extensions;
-using System.Windows;
-using FluentFlyoutWPF.Classes;
-using FluentFlyout.Classes.Settings;
 
-
-namespace FluentFlyoutWPF.Windows;
+namespace FluentFlyout.Windows;
 
 /// <summary>
 /// Interaction logic for LockWindow.xaml

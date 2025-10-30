@@ -1,7 +1,6 @@
-﻿using FluentFlyout.Classes.Settings;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace FluentFlyoutWPF.Classes;
+namespace FluentFlyout.Classes;
 
 internal class FullscreenDetector
 {

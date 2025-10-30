@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using FluentFlyout.Classes;
 using FluentFlyoutWPF.Models;
 
-namespace FluentFlyout.Classes.Settings;
+namespace FluentFlyout.ViewModels;
 
 /**
  * User Settings data model.

@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Serialization;
 
-namespace FluentFlyout.Classes.Settings;
+namespace FluentFlyout.Classes;
 
 /// <summary>
 /// Manages the application settings and saves them to a file in \AppData\FluentFlyout.
@@ -14,17 +14,17 @@ public class SettingsManager
         "settings.xml"
     );
     string logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FluentFlyout", "log.txt");
-    private static UserSettings? _current;
+    private static ViewModels.UserSettings? _current;
 
     /// <summary>
     /// The current user settings stored in the app.
     /// </summary>
     /// <returns>The current user settings.</returns>
-    public static UserSettings Current
+    public static ViewModels.UserSettings Current
     {
         get
         {
-            _current ??= new UserSettings();
+            _current ??= new ViewModels.UserSettings();
             return _current;
         }
         set => _current = value;
@@ -57,16 +57,16 @@ public class SettingsManager
     /// Restores the settings `SettingsManager.Current` from the settings file.
     /// </summary>
     /// <returns>The restored settings.</returns>
-    public static UserSettings RestoreSettings()
+    public static ViewModels.UserSettings RestoreSettings()
     {
         //File.AppendAllText(logFilePath, $"[{DateTime.Now}] {SettingsFilePath}\n");
-        var xmlSerializer = new XmlSerializer(typeof(UserSettings));
+        var xmlSerializer = new XmlSerializer(typeof(ViewModels.UserSettings));
         try
         {
             if (File.Exists(SettingsFilePath))
             {
                 using var reader = new StreamReader(SettingsFilePath);
-                _current = (UserSettings)xmlSerializer.Deserialize(reader)!;
+                _current = (ViewModels.UserSettings)xmlSerializer.Deserialize(reader)!;
                 //File.AppendAllText(logFilePath, $"[{DateTime.Now}] Settings restored\n");
                 //EventLog.WriteEntry("FluentFlyout", "Settings restored", EventLogEntryType.Information);
                 return _current;
@@ -83,7 +83,7 @@ public class SettingsManager
 
         // if the settings file not found or cannot be read
         //File.AppendAllText(logFilePath, $"[{DateTime.Now}] Settings file not found or cannot be read\n");
-        _current = new UserSettings();
+        _current = new ViewModels.UserSettings();
         return _current;
     }
 
@@ -92,7 +92,7 @@ public class SettingsManager
     /// </summary>
     public static void SaveSettings()
     {
-        var xmlSerializer = new XmlSerializer(typeof(UserSettings));
+        var xmlSerializer = new XmlSerializer(typeof(ViewModels.UserSettings));
         try
         {
             var directory = Path.GetDirectoryName(SettingsFilePath);
