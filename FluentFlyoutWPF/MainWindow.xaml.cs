@@ -6,7 +6,7 @@ using MicaWPF.Controls;
 using MicaWPF.Core.Extensions;
 using Microsoft.Win32;
 using System.Diagnostics;
-using System.Drawing;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -45,6 +45,7 @@ public partial class MainWindow : MicaWindow
     private bool _playerInfoEnabled = SettingsManager.Current.PlayerInfoEnabled;
     private bool _centerTitleArtist = SettingsManager.Current.CenterTitleArtist;
     private bool _seekBarEnabled = SettingsManager.Current.SeekbarEnabled;
+    private bool _alwaysDisplay = SettingsManager.Current.MediaFlyoutAlwaysDisplay;
     private bool _mediaSessionSupportsSeekbar = false;
     private bool _acrylicEnabled = SettingsManager.Current.MediaFlyoutAcrylicWindowEnabled;
     private int _themeOption = SettingsManager.Current.AppTheme;
@@ -409,17 +410,17 @@ public partial class MainWindow : MicaWindow
                 if (vkCode == 0x14) // Caps Lock
                 {
                     lockWindow ??= new LockWindow();
-                    lockWindow.ShowLockFlyout("Caps Lock", Keyboard.IsKeyToggled(Key.CapsLock));
+                    lockWindow.ShowLockFlyout(FindResource("LockWindow_CapsLock").ToString(), Keyboard.IsKeyToggled(Key.CapsLock));
                 }
                 else if (vkCode == 0x90) // Num Lock
                 {
                     lockWindow ??= new LockWindow();
-                    lockWindow.ShowLockFlyout("Num Lock", Keyboard.IsKeyToggled(Key.NumLock));
+                    lockWindow.ShowLockFlyout(FindResource("LockWindow_NumLock").ToString(), Keyboard.IsKeyToggled(Key.NumLock));
                 }
                 else if (vkCode == 0x91) // Scroll Lock
                 {
                     lockWindow ??= new LockWindow();
-                    lockWindow.ShowLockFlyout("Scroll Lock", Keyboard.IsKeyToggled(Key.Scroll));
+                    lockWindow.ShowLockFlyout(FindResource("LockWindow_ScrollLock").ToString(), Keyboard.IsKeyToggled(Key.Scroll));
                 }
                 else if (vkCode == 0x2D && SettingsManager.Current.LockKeysInsertEnabled) // Insert
                 {
@@ -462,7 +463,7 @@ public partial class MainWindow : MicaWindow
             while (!token.IsCancellationRequested)
             {
                 await Task.Delay(100, token); // check if mouse is over every 100ms
-                if (!IsMouseOver)
+                if (!IsMouseOver && !SettingsManager.Current.MediaFlyoutAlwaysDisplay)
                 {
                     await Task.Delay(SettingsManager.Current.Duration, token);
                     if (!IsMouseOver)
@@ -485,18 +486,26 @@ public partial class MainWindow : MicaWindow
         }
     }
 
+    private void UpdateMediaFlyoutCloseButtonVisibility()
+    {
+        MediaFlyoutCloseButton.Visibility = SettingsManager.Current.MediaFlyoutAlwaysDisplay && !SettingsManager.Current.CompactLayout ? Visibility.Visible : Visibility.Collapsed;
+        ControlClose.Visibility = SettingsManager.Current.MediaFlyoutAlwaysDisplay && SettingsManager.Current.CompactLayout ? Visibility.Visible : Visibility.Collapsed;
+    }
+
     private void UpdateUI(MediaSession mediaSession)
     {
         if (_layout != SettingsManager.Current.CompactLayout ||
             _shuffleEnabled != SettingsManager.Current.ShuffleEnabled ||
-            _repeatEnabled != SettingsManager.Current.ShuffleEnabled ||
+            _repeatEnabled != SettingsManager.Current.RepeatEnabled ||
             _playerInfoEnabled != SettingsManager.Current.PlayerInfoEnabled ||
             _centerTitleArtist != SettingsManager.Current.CenterTitleArtist ||
-            _seekBarEnabled != SettingsManager.Current.SeekbarEnabled)
+            _seekBarEnabled != SettingsManager.Current.SeekbarEnabled ||
+            _alwaysDisplay != SettingsManager.Current.MediaFlyoutAlwaysDisplay)
             UpdateUILayout();
 
         Dispatcher.Invoke(() =>
         {
+            UpdateMediaFlyoutCloseButtonVisibility();
             this.EnableBackdrop(); // ensures the backdrop is enabled as sometimes it gets disabled
 
             if (mediaSession == null)
@@ -601,21 +610,23 @@ public partial class MainWindow : MicaWindow
                 SongArtist.Text = songInfo.Artist;
                 var image = Helper.GetThumbnail(songInfo.Thumbnail);
                 SongImage.ImageSource = image;
-                // make image 1:1 aspect ratio so gradient masks work for non-square images
-                image = Helper.CropToSquare(image);
+
                 // background blurred image
                 if (SettingsManager.Current.MediaFlyoutBackgroundBlur != 0)
                 {
+                    // make image 1:1 aspect ratio so gradient masks work for non-square images
+                    var croppedImage = Helper.CropToSquare(image);
+
                     switch (SettingsManager.Current.MediaFlyoutBackgroundBlur)
                     {
                         case 1:
-                            BackgroundImageStyle1.Source = image;
+                            BackgroundImageStyle1.Source = croppedImage;
                             break;
                         case 2:
-                            BackgroundImageStyle2.Source = image;
+                            BackgroundImageStyle2.Source = croppedImage;
                             break;
                         case 3:
-                            BackgroundImageStyle3.Source = image;
+                            BackgroundImageStyle3.Source = croppedImage;
                             break;
                     }
                 }
@@ -672,6 +683,11 @@ public partial class MainWindow : MicaWindow
                 SongImageBorder.Height = 36;
                 SongInfoStackPanel.Margin = new Thickness(8, 0, 0, 0);
                 SongInfoStackPanel.Width = 182;
+                if (SettingsManager.Current.MediaFlyoutAlwaysDisplay)
+                {
+                    SongInfoStackPanel.Width -= 36;
+                    ControlsStackPanel.Width += 44;
+                }
             }
             else // normal layout
             {
@@ -711,6 +727,7 @@ public partial class MainWindow : MicaWindow
         _playerInfoEnabled = SettingsManager.Current.PlayerInfoEnabled;
         _centerTitleArtist = SettingsManager.Current.CenterTitleArtist;
         _seekBarEnabled = SettingsManager.Current.SeekbarEnabled;
+        _alwaysDisplay = SettingsManager.Current.MediaFlyoutAlwaysDisplay;
     }
 
     private async void Back_Click(object sender, RoutedEventArgs e)
@@ -881,68 +898,43 @@ public partial class MainWindow : MicaWindow
 
     internal static class Helper
     {
+        private const int MaxThumbnailSize = 512;
+
         internal static BitmapImage? GetThumbnail(IRandomAccessStreamReference Thumbnail, bool convertToPng = true)
         {
             if (Thumbnail == null)
                 return null;
 
-            var thumbnailStream = Thumbnail.OpenReadAsync().GetAwaiter().GetResult();
-            byte[] thumbnailBytes = new byte[thumbnailStream.Size];
-            using (DataReader reader = new DataReader(thumbnailStream))
+            BitmapImage image = new();
+            using (var imageStream = Thumbnail.OpenReadAsync().GetAwaiter().GetResult().AsStreamForRead())
             {
-                reader.LoadAsync((uint)thumbnailStream.Size).GetAwaiter().GetResult();
-                reader.ReadBytes(thumbnailBytes);
-            }
-
-            byte[] imageBytes = thumbnailBytes;
-
-            if (convertToPng)
-            {
-                using var fileMemoryStream = new System.IO.MemoryStream(thumbnailBytes);
-                Bitmap thumbnailBitmap = (Bitmap)Bitmap.FromStream(fileMemoryStream);
-
-                if (!thumbnailBitmap.RawFormat.Equals(System.Drawing.Imaging.ImageFormat.Png))
-                {
-                    using var pngMemoryStream = new System.IO.MemoryStream();
-                    thumbnailBitmap.Save(pngMemoryStream, System.Drawing.Imaging.ImageFormat.Png);
-                    imageBytes = pngMemoryStream.ToArray();
-                }
-            }
-
-            var image = new BitmapImage();
-            using (var ms = new System.IO.MemoryStream(imageBytes))
-            {
+                // initialize the BitmapImage
                 image.BeginInit();
                 image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = ms;
+                image.DecodePixelWidth = MaxThumbnailSize;
+                image.StreamSource = imageStream;
                 image.EndInit();
             }
-
+            image.Freeze();
             return image;
         }
 
-        internal static BitmapImage? CropToSquare(BitmapImage? sourceImage)
+        internal static CroppedBitmap? CropToSquare(BitmapImage? sourceImage)
         {
             if (sourceImage == null)
                 return null;
+
             int size = (int)Math.Min(sourceImage.PixelWidth, sourceImage.PixelHeight);
             int x = (sourceImage.PixelWidth - size) / 2;
             int y = (sourceImage.PixelHeight - size) / 2;
+
             var rect = new Int32Rect(x, y, size, size);
+
+            // create a CroppedBitmap (this is a lightweight object)
             var croppedBitmap = new CroppedBitmap(sourceImage, rect);
-            var bitmapImage = new BitmapImage();
-            using (var memoryStream = new System.IO.MemoryStream())
-            {
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
-                encoder.Save(memoryStream);
-                memoryStream.Position = 0;
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = memoryStream;
-                bitmapImage.EndInit();
-            }
-            return bitmapImage;
+
+            croppedBitmap.Freeze();
+            return croppedBitmap;
         }
     }
 
@@ -1007,7 +999,6 @@ public partial class MainWindow : MicaWindow
             })
         );
     }
-    
     internal void EnableBlur()
     {
         if (SettingsManager.Current.MediaFlyoutAcrylicWindowEnabled)
@@ -1018,5 +1009,24 @@ public partial class MainWindow : MicaWindow
         {
             WindowBlurHelper.DisableBlur(this);
         }
+    }
+
+    private void MediaFlyoutCloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        CloseAnimation(this);
+        _isHiding = true;
+        Task.Run(async () =>
+        {
+            await Task.Delay(getDuration());
+            Dispatcher.Invoke(() =>
+            {
+                if (_isHiding)
+                {
+                    Hide();
+                    if (_seekBarEnabled)
+                        HandlePlayBackState(GlobalSystemMediaTransportControlsSessionPlaybackStatus.Paused);
+                }
+            });
+        });
     }
 }
