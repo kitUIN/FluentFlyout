@@ -47,6 +47,16 @@ public partial class UserSettings : ObservableObject
     [ObservableProperty] public partial bool Startup { get; set; }
 
     /// <summary>
+    /// MediaFlyout Always Display
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsDurationEditable))] 
+    public partial bool MediaFlyoutAlwaysDisplay { get; set; }
+    
+    [XmlIgnore]
+    public bool IsDurationEditable => !MediaFlyoutAlwaysDisplay;
+    
+    /// <summary>
     /// Flyout display duration (milliseconds)
     /// </summary>
     [ObservableProperty]
@@ -252,6 +262,7 @@ public partial class UserSettings : ObservableObject
         LockKeysDuration = 2000;
         AppTheme = 0;
         MediaFlyoutEnabled = true;
+        MediaFlyoutAlwaysDisplay = false;
         NIconSymbol = false;
         DisableIfFullscreen = true;
         LockKeysBoldUi = true;
