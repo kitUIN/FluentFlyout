@@ -1,4 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using FluentFlyoutWPF.Models;
 
 namespace FluentFlyout.Classes.Settings;
 
@@ -45,8 +49,29 @@ public partial class UserSettings : ObservableObject
     /// <summary>
     /// Flyout display duration (milliseconds)
     /// </summary>
-    [ObservableProperty] public partial int Duration { get; set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(DurationText))]
+    public partial int Duration { get; set; }
 
+    [XmlIgnore]
+    public string DurationText
+    {
+        get => Duration.ToString();
+        set
+        {
+            if (int.TryParse(value, out var result))
+            {
+                Duration = result switch
+                {
+                    > 10000 => 10000,
+                    < 0 => 0,
+                    _ => result
+                };
+            }
+            OnPropertyChanged();
+        }
+    }
+    
     /// <summary>
     /// Enable the 'Next Up' flyout (experimental)
     /// </summary>
@@ -55,8 +80,29 @@ public partial class UserSettings : ObservableObject
     /// <summary>
     /// 'Next Up' flyout display duration (milliseconds)
     /// </summary>
-    [ObservableProperty] public partial int NextUpDuration { get; set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NextUpDurationText))]
+    public partial int NextUpDuration { get; set; }
 
+    [XmlIgnore]
+    public string NextUpDurationText
+    {
+        get => NextUpDuration.ToString();
+        set
+        {
+            if (int.TryParse(value, out var result))
+            {
+                NextUpDuration = result switch
+                {
+                    > 10000 => 10000,
+                    < 0 => 0,
+                    _ => result
+                };
+            }
+
+            OnPropertyChanged();
+        }
+    }
     /// <summary>
     /// Tray icon left-click behavior
     /// </summary>
@@ -80,10 +126,32 @@ public partial class UserSettings : ObservableObject
     /// <summary>
     /// Lock keys flyout display duration (milliseconds)
     /// </summary>
-    [ObservableProperty] public partial int LockKeysDuration { get; set; }
+    
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(LockKeysDurationText))]
+    public partial int LockKeysDuration { get; set; }
 
+    [XmlIgnore]
+    public string LockKeysDurationText
+    {
+        get => LockKeysDuration.ToString();
+        set
+        {
+            if (int.TryParse(value, out var result))
+            {
+                LockKeysDuration = result switch
+                {
+                    > 10000 => 10000,
+                    < 0 => 0,
+                    _ => result
+                };
+            }
+
+            OnPropertyChanged();
+        }
+    }
     /// <summary>
-    /// App theme
+    /// App theme. 0 for default, 1 for light, 2 for dark.
     /// </summary>
     [ObservableProperty] public partial int AppTheme { get; set; }
 
@@ -147,7 +215,23 @@ public partial class UserSettings : ObservableObject
     /// </summary>
     [ObservableProperty]
     public partial string AppLanguage { get; set; }
+    
+    /// <summary>
+    /// Language Options
+    /// </summary>
+    [XmlIgnore]
+    public ObservableCollection<LanguageOption> LanguageOptions { get; } =
+    [
+        new("System", "system"),
+        new("English", "en-US"),
+        new("Nederlands", "nl-NL"),
+        new("Tiếng Việt", "vi-VN")
+    ];
 
+    
+    [XmlIgnore]
+    [ObservableProperty]
+    public partial LanguageOption SelectedLanguage { get; set; }
 
     public UserSettings()
     {
@@ -178,5 +262,37 @@ public partial class UserSettings : ObservableObject
         MediaFlyoutBackgroundBlur = 0;
         MediaFlyoutAcrylicWindowEnabled = true;
         AppLanguage = "system";
+        _initializing = false;
+    }
+    
+    
+    private static bool _initializing = true;
+    
+    partial void OnAppLanguageChanged(string oldValue, string newValue)
+    {
+        if (oldValue == newValue) return;
+        SelectedLanguage = LanguageOptions.First(l => l.Tag == newValue);
+    }
+    
+    partial void OnSelectedLanguageChanged(LanguageOption oldValue, LanguageOption newValue)
+    {
+        if (oldValue == newValue || _initializing) return;
+        AppLanguage = newValue.Tag;
+        LocalizationManager.ApplyLocalization();
+    } 
+    
+    /// <summary>
+    /// Changes the application theme when the selection is changed. 0 for default, 1 for light, 2 for dark.
+    /// </summary>
+    partial void OnAppThemeChanged(int oldValue, int newValue)
+    {
+        if (oldValue == newValue || _initializing) return;
+        ThemeManager.ApplyAndSaveTheme(newValue);
+    }
+
+    partial void OnNIconSymbolChanged(bool oldValue, bool newValue)
+    {
+        if (oldValue == newValue || _initializing) return;
+        ThemeManager.UpdateTrayIcon();
     }
 }
