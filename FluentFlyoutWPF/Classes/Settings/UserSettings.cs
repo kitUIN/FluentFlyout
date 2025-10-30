@@ -1,34 +1,152 @@
-﻿namespace FluentFlyout.Classes.Settings;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public class UserSettings
+namespace FluentFlyout.Classes.Settings;
+
+/**
+ * User Settings data model.
+ */
+public partial class UserSettings : ObservableObject
 {
-    public bool CompactLayout { get; set; }
-    public int Position { get; set; }
-    public int FlyoutAnimationSpeed { get; set; }
-    public bool PlayerInfoEnabled { get; set; }
-    public bool RepeatEnabled { get; set; }
-    public bool ShuffleEnabled { get; set; }
-    public bool Startup { get; set; }
-    public int Duration { get; set; }
-    public bool NextUpEnabled { get; set; }
-    public int NextUpDuration { get; set; }
-    public int nIconLeftClick { get; set; }
-    public bool CenterTitleArtist { get; set; }
-    public int FlyoutAnimationEasingStyle { get; set; }
-    public bool LockKeysEnabled { get; set; }
-    public int LockKeysDuration { get; set; }
-    public int AppTheme { get; set; }
-    public bool MediaFlyoutEnabled { get; set; }
-    public bool nIconSymbol { get; set; }
-    public bool DisableIfFullscreen { get; set; }
-    public bool LockKeysBoldUI { get; set; }
-    public string LastKnownVersion { get; set; } // for determining if user had updated to a new version
-    public bool SeekbarEnabled { get; set; }
-    public bool PauseOtherSessionsEnabled { get; set; } // pause other sessions when the user focuses on a new one
-    public bool LockKeysInsertEnabled { get; set; } // whether pressing insert key should display the LockKeys flyout
-    public int MediaFlyoutBackgroundBlur { get; set; } // media flyout presets for background blur styles
-    public bool MediaFlyoutAcrylicWindowEnabled { get; set; } // enable acrylic blur effect on the flyout window
-    public string AppLanguage { get; set; } // user's preferred app language
+    /// <summary>
+    /// Use a compact layout
+    /// </summary>
+    [ObservableProperty] public partial bool CompactLayout { get; set; }
+
+    /// <summary>
+    /// Flyout position on screen
+    /// </summary>
+    [ObservableProperty] public partial int Position { get; set; }
+
+    /// <summary>
+    /// Scale for flyout animation speed
+    /// </summary>
+    [ObservableProperty] public partial int FlyoutAnimationSpeed { get; set; }
+
+    /// <summary>
+    /// Show player information in the flyout
+    /// </summary>
+    [ObservableProperty] public partial bool PlayerInfoEnabled { get; set; }
+
+    /// <summary>
+    /// Enable repeat button
+    /// </summary>
+    [ObservableProperty] public partial bool RepeatEnabled { get; set; }
+
+    /// <summary>
+    /// Enable shuffle button
+    /// </summary>
+    [ObservableProperty] public partial bool ShuffleEnabled { get; set; }
+
+    /// <summary>
+    /// Start minimized to tray when Windows starts
+    /// </summary>
+    [ObservableProperty] public partial bool Startup { get; set; }
+
+    /// <summary>
+    /// Flyout display duration (milliseconds)
+    /// </summary>
+    [ObservableProperty] public partial int Duration { get; set; }
+
+    /// <summary>
+    /// Enable the 'Next Up' flyout (experimental)
+    /// </summary>
+    [ObservableProperty] public partial bool NextUpEnabled { get; set; }
+
+    /// <summary>
+    /// 'Next Up' flyout display duration (milliseconds)
+    /// </summary>
+    [ObservableProperty] public partial int NextUpDuration { get; set; }
+
+    /// <summary>
+    /// Tray icon left-click behavior
+    /// </summary>
+    [ObservableProperty] public partial int NIconLeftClick { get; set; }
+
+    /// <summary>
+    /// Center the title and artist text
+    /// </summary>
+    [ObservableProperty] public partial bool CenterTitleArtist { get; set; }
+
+    /// <summary>
+    /// Animation easing style index
+    /// </summary>
+    [ObservableProperty] public partial int FlyoutAnimationEasingStyle { get; set; }
+
+    /// <summary>
+    /// Enable lock keys flyout (shows Caps/Num/Scroll status)
+    /// </summary>
+    [ObservableProperty] public partial bool LockKeysEnabled { get; set; }
+
+    /// <summary>
+    /// Lock keys flyout display duration (milliseconds)
+    /// </summary>
+    [ObservableProperty] public partial int LockKeysDuration { get; set; }
+
+    /// <summary>
+    /// App theme
+    /// </summary>
+    [ObservableProperty] public partial int AppTheme { get; set; }
+
+    /// <summary>
+    /// Enable media flyout
+    /// </summary>
+    [ObservableProperty] public partial bool MediaFlyoutEnabled { get; set; }
+
+    /// <summary>
+    /// Use symbol-style tray icon
+    /// </summary>
+    [ObservableProperty] public partial bool NIconSymbol { get; set; }
+
+    /// <summary>
+    /// Disable flyout when a DirectX exclusive fullscreen app is detected
+    /// </summary>
+    [ObservableProperty] public partial bool DisableIfFullscreen { get; set; }
+
+    /// <summary>
+    /// Use bold symbol and font in the lock keys flyout
+    /// </summary>
+    [ObservableProperty] public partial bool LockKeysBoldUi { get; set; }
+
+    /// <summary>
+    /// Determines if the user has updated to a new version
+    /// </summary>
+    [ObservableProperty]
+    public partial string LastKnownVersion { get; set; }
+
+    /// <summary>
+    /// Show seekbar if the player supports it
+    /// </summary>
+    [ObservableProperty] public partial bool SeekbarEnabled { get; set; }
+
+    /// <summary>
+    /// Pause other media sessions when focusing a new one
+    /// </summary>
+    [ObservableProperty]
+    public partial bool PauseOtherSessionsEnabled { get; set; }
+
+    /// <summary>
+    /// Show LockKeys flyout when the Insert key is pressed
+    /// </summary>
+    [ObservableProperty]
+    public partial bool LockKeysInsertEnabled { get; set; }
+
+    /// <summary>
+    /// Preset for media flyout background blur styles
+    /// </summary>
+    [ObservableProperty]
+    public partial int MediaFlyoutBackgroundBlur { get; set; }
+
+    /// <summary>
+    /// Enable acrylic blur effect on the flyout window
+    /// </summary>
+    [ObservableProperty]
+    public partial bool MediaFlyoutAcrylicWindowEnabled { get; set; }
+
+    /// <summary>
+    /// User's preferred app language (e.g., "system" for system default)
+    /// </summary>
+    [ObservableProperty]
+    public partial string AppLanguage { get; set; }
 
 
     public UserSettings()
@@ -43,16 +161,16 @@ public class UserSettings
         Duration = 3000;
         NextUpEnabled = false;
         NextUpDuration = 2000;
-        nIconLeftClick = 0;
+        NIconLeftClick = 0;
         CenterTitleArtist = false;
         FlyoutAnimationEasingStyle = 2;
         LockKeysEnabled = true;
         LockKeysDuration = 2000;
         AppTheme = 0;
         MediaFlyoutEnabled = true;
-        nIconSymbol = false;
+        NIconSymbol = false;
         DisableIfFullscreen = true;
-        LockKeysBoldUI = true;
+        LockKeysBoldUi = true;
         LastKnownVersion = "";
         SeekbarEnabled = false;
         PauseOtherSessionsEnabled = false;

@@ -47,16 +47,16 @@ public partial class SettingsWindow : MicaWindow
         DurationTextBox.Text = SettingsManager.Current.Duration.ToString();
         NextUpSwitch.IsChecked = SettingsManager.Current.NextUpEnabled;
         NextUpDurationTextBox.Text = SettingsManager.Current.NextUpDuration.ToString();
-        nIconLeftClickComboBox.SelectedIndex = SettingsManager.Current.nIconLeftClick;
+        nIconLeftClickComboBox.SelectedIndex = SettingsManager.Current.NIconLeftClick;
         CenterTitleArtistSwitch.IsChecked = SettingsManager.Current.CenterTitleArtist;
         AnimationEasingStylesComboBox.SelectedIndex = SettingsManager.Current.FlyoutAnimationEasingStyle;
         LockKeysSwitch.IsChecked = SettingsManager.Current.LockKeysEnabled;
         LockKeysDurationTextBox.Text = SettingsManager.Current.LockKeysDuration.ToString();
         AppThemeComboBox.SelectedIndex = SettingsManager.Current.AppTheme;
         MediaFlyoutEnabledSwitch.IsChecked = SettingsManager.Current.MediaFlyoutEnabled;
-        nIconSymbolSwitch.IsChecked = SettingsManager.Current.nIconSymbol;
+        nIconSymbolSwitch.IsChecked = SettingsManager.Current.NIconSymbol;
         DisableIfFullscreenSwitch.IsChecked = SettingsManager.Current.DisableIfFullscreen;
-        LockKeysBoldUISwitch.IsChecked = SettingsManager.Current.LockKeysBoldUI;
+        LockKeysBoldUISwitch.IsChecked = SettingsManager.Current.LockKeysBoldUi;
         SeekbarSwitch.IsChecked = SettingsManager.Current.SeekbarEnabled;
         PauseOtherSessionsEnabledSwitch.IsChecked = SettingsManager.Current.PauseOtherSessionsEnabled;
         LockKeysEnableInsertSwitch.IsChecked = SettingsManager.Current.LockKeysInsertEnabled;
@@ -226,7 +226,7 @@ public partial class SettingsWindow : MicaWindow
     private void nIconLeftClickComboBox_SelectionChanged(object sender,
         System.Windows.Controls.SelectionChangedEventArgs e)
     {
-        SettingsManager.Current.nIconLeftClick = nIconLeftClickComboBox.SelectedIndex;
+        SettingsManager.Current.NIconLeftClick = nIconLeftClickComboBox.SelectedIndex;
     }
 
     private void CenterTitleArtistSwitch_Click(object sender, RoutedEventArgs e)
@@ -335,7 +335,7 @@ public partial class SettingsWindow : MicaWindow
 
     private void nIconSymbolSwitch_Click(object sender, RoutedEventArgs e)
     {
-        SettingsManager.Current.nIconSymbol = nIconSymbolSwitch.IsChecked ?? false;
+        SettingsManager.Current.NIconSymbol = nIconSymbolSwitch.IsChecked ?? false;
         ThemeManager.UpdateTrayIcon();
     }
 
@@ -346,7 +346,7 @@ public partial class SettingsWindow : MicaWindow
 
     private void LockKeysBoldUISwitch_Click(object sender, RoutedEventArgs e)
     {
-        SettingsManager.Current.LockKeysBoldUI = LockKeysBoldUISwitch.IsChecked ?? false;
+        SettingsManager.Current.LockKeysBoldUi = LockKeysBoldUISwitch.IsChecked ?? false;
     }
 
     private void PauseOtherSessionsEnabledSwitch_Click(object sender, RoutedEventArgs e)

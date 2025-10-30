@@ -77,7 +77,7 @@ public partial class MainWindow : MicaWindow
         SettingsManager settingsManager = new();
         try
         {
-            settingsManager.RestoreSettings();
+            SettingsManager.RestoreSettings();
         }
         catch (Exception ex)
         {
@@ -981,14 +981,14 @@ public partial class MainWindow : MicaWindow
 
     private void nIcon_LeftClick(Wpf.Ui.Tray.Controls.NotifyIcon sender, RoutedEventArgs e) // change the behavior of the tray icon
     {
-        if (SettingsManager.Current.nIconLeftClick == 0)
+        if (SettingsManager.Current.NIconLeftClick == 0)
         {
             openSettings(sender, e);
             //Wpf.Ui.Appearance.ApplicationThemeManager.Apply(ApplicationTheme.Light, WindowBackdropType.Mica); // to change the theme
             //ThemeService themeService = new ThemeService();
             //themeService.ChangeTheme(MicaWPF.Core.Enums.WindowsTheme.Light);
         }
-        else if (SettingsManager.Current.nIconLeftClick == 1) ShowMediaFlyout();
+        else if (SettingsManager.Current.NIconLeftClick == 1) ShowMediaFlyout();
     }
 
     private Task PauseOtherSessions(MediaSession currentMediaSession)

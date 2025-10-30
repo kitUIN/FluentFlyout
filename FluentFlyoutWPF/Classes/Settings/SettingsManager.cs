@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Serialization;
 
 namespace FluentFlyout.Classes.Settings;
@@ -15,7 +14,7 @@ public class SettingsManager
         "settings.xml"
     );
     string logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FluentFlyout", "log.txt");
-    private static UserSettings _current;
+    private static UserSettings? _current;
 
     /// <summary>
     /// The current user settings stored in the app.
@@ -25,10 +24,7 @@ public class SettingsManager
     {
         get
         {
-            if (_current == null)
-            {
-                _current = new UserSettings();
-            }
+            _current ??= new UserSettings();
             return _current;
         }
         set => _current = value;
@@ -61,21 +57,19 @@ public class SettingsManager
     /// Restores the settings `SettingsManager.Current` from the settings file.
     /// </summary>
     /// <returns>The restored settings.</returns>
-    public UserSettings RestoreSettings()
+    public static UserSettings RestoreSettings()
     {
         //File.AppendAllText(logFilePath, $"[{DateTime.Now}] {SettingsFilePath}\n");
+        var xmlSerializer = new XmlSerializer(typeof(UserSettings));
         try
         {
             if (File.Exists(SettingsFilePath))
             {
-                using (StreamReader reader = new StreamReader(SettingsFilePath))
-                {
-                    XmlSerializer xmlSerializer = new XmlSerializer(typeof(UserSettings));
-                    _current = (UserSettings)xmlSerializer.Deserialize(reader);
-                    //File.AppendAllText(logFilePath, $"[{DateTime.Now}] Settings restored\n");
-                    //EventLog.WriteEntry("FluentFlyout", "Settings restored", EventLogEntryType.Information);
-                    return _current;
-                }
+                using var reader = new StreamReader(SettingsFilePath);
+                _current = (UserSettings)xmlSerializer.Deserialize(reader)!;
+                //File.AppendAllText(logFilePath, $"[{DateTime.Now}] Settings restored\n");
+                //EventLog.WriteEntry("FluentFlyout", "Settings restored", EventLogEntryType.Information);
+                return _current;
             }
         }
         catch (UnauthorizedAccessException ex)
@@ -98,19 +92,17 @@ public class SettingsManager
     /// </summary>
     public static void SaveSettings()
     {
+        var xmlSerializer = new XmlSerializer(typeof(UserSettings));
         try
         {
-            string directory = Path.GetDirectoryName(SettingsFilePath);
+            var directory = Path.GetDirectoryName(SettingsFilePath);
             if (directory != null && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
 
-            using (StreamWriter writer = new StreamWriter(SettingsFilePath))
-            {
-                XmlSerializer xmlSerializer = new XmlSerializer(typeof(UserSettings));
-                xmlSerializer.Serialize(writer, _current);
-            }
+            using var writer = new StreamWriter(SettingsFilePath);
+            xmlSerializer.Serialize(writer, _current);
         }
         catch (UnauthorizedAccessException ex)
         {
