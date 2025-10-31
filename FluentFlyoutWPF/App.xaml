@@ -1,4 +1,4 @@
-﻿<Application x:Class="FluentFlyout.App"
+<Application x:Class="FluentFlyout.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:FluentFlyout"
@@ -14,14 +14,14 @@
                 <mica:ThemeDictionary Theme="Auto" DesignModeTheme="Auto"/>
                 <ui:ThemesDictionary Theme="Unknown"/>
                 <mica:ControlsDictionary />
-                <!-- default language en-US -->
-                <ResourceDictionary Source="Resources/Localization/Dictionary-en-US.xaml"/>
-                <!-- resource -->
                 <ResourceDictionary>
                     <system:Double x:Key="MediaFlyoutButtonSmallWidth">28</system:Double>
                     <system:Double x:Key="MediaFlyoutButtonSmallHeight">28</system:Double>
-                    
                 </ResourceDictionary>
+                <ResourceDictionary Source="Controls/FluentMediaFlyout.xaml"/>
+                <!-- default language en-US -->
+                <ResourceDictionary Source="Resources/Localization/Dictionary-en-US.xaml"/>
+                <!-- resource -->
 
             </ResourceDictionary.MergedDictionaries>
             <FontFamily x:Key="SegoeFluentIcons">pack://application:,,,/;component/Fonts/#Segoe Fluent Icons</FontFamily>
